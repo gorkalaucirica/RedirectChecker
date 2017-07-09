@@ -1,0 +1,10 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "GorkaLaucirica\\RedirectChecker\\": "src/GorkaLaucirica/RedirectChecker"
+        }
+    }
+}
