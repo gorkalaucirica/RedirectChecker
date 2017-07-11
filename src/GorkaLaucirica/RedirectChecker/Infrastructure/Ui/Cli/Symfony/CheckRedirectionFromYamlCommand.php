@@ -31,7 +31,7 @@ class CheckRedirectionFromYamlCommand extends Command
         foreach ($redirections as $redirection) {
             $redirectionTrace = $client->getRedirectionTrace($redirection);
 
-            if ($redirection->checkIsValid($redirectionTrace)) {
+            if ($redirection->isValid($redirectionTrace)) {
                 $output->writeln(
                     sprintf(
                         '<fg=green>✓</> %s -> <fg=green> %s </>',

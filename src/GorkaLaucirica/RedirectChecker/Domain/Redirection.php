@@ -13,10 +13,8 @@ class Redirection
         $this->destination = $destination;
     }
 
-    public function checkIsValid(array $uriTrace)
+    public function isValid(array $uriTrace)
     {
-        $this->uriTrace = $uriTrace;
-
         if(count($uriTrace) === 0) {
             return false;
         }
