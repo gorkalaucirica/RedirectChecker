@@ -4,7 +4,9 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "symfony/console": "^3.3",
+        "symfony/yaml": "^3.3"
     },
     "require-dev": {
         "phpspec/phpspec": "^3.4"
