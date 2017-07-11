@@ -1,5 +1,5 @@
 {
-    "name": "gorkalaucirica/redirection-checker",
+    "name": "gorkalaucirica/redirect-checker",
     "description": "Automated URL redirection checker",
     "type": "library",
     "license": "MIT",
