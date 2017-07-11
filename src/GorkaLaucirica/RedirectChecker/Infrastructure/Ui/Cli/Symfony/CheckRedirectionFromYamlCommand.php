@@ -15,7 +15,7 @@ final class CheckRedirectionFromYamlCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('redirect-checker:yaml')
+        $this->setName('yaml')
             ->addArgument('filepath', InputArgument::REQUIRED);
     }
 
