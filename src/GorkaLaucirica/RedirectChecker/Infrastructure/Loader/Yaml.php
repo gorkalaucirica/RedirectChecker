@@ -2,8 +2,6 @@
 
 namespace GorkaLaucirica\RedirectChecker\Infrastructure\Loader;
 
-use GorkaLaucirica\RedirectChecker\Domain\Redirection;
-use GorkaLaucirica\RedirectChecker\Domain\Uri;
 use Symfony\Component\Yaml\Yaml as SymfonyYaml;
 
 final class Yaml
@@ -21,18 +19,6 @@ final class Yaml
             );
         }
 
-        $redirectionsArray = SymfonyYaml::parse($content);
-
-        $redirections = [];
-
-        foreach ($redirectionsArray as $origin => $destination)
-        {
-            $redirections[] = new Redirection(
-                new Uri($origin),
-                new Uri($destination)
-            );
-        }
-
-        return $redirections;
+        return SymfonyYaml::parse($content);
     }
 }

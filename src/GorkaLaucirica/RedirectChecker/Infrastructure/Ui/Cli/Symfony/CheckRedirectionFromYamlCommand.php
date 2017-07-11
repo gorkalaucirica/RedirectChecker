@@ -2,7 +2,8 @@
 
 namespace GorkaLaucirica\RedirectChecker\Infrastructure\Ui\Cli\Symfony;
 
-use GorkaLaucirica\RedirectChecker\Domain\Redirection;
+use GorkaLaucirica\RedirectChecker\Application\Query\CheckRedirectionHandler;
+use GorkaLaucirica\RedirectChecker\Application\Query\CheckRedirectionQuery;
 use GorkaLaucirica\RedirectChecker\Infrastructure\RedirectTraceProvider\Guzzle;
 use GorkaLaucirica\RedirectChecker\Infrastructure\Loader\Yaml;
 use Symfony\Component\Console\Command\Command;
@@ -20,23 +21,21 @@ final class CheckRedirectionFromYamlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $checkRedirectionHandler = new CheckRedirectionHandler(new Guzzle());
+
         $fails = 0;
         $success = 0;
 
-        $client = new Guzzle();
-
         $redirections = (new Yaml())->load($input->getArgument('filepath'));
 
-        /** @var Redirection $redirection */
-        foreach ($redirections as $redirection) {
-            $redirectionTrace = $client->getRedirectionTrace($redirection);
-
-            if ($redirection->isValid($redirectionTrace)) {
+        foreach ($redirections as $origin => $destination) {
+            $redirection = $checkRedirectionHandler->__invoke(new CheckRedirectionQuery($origin, $destination));
+            if ($redirection['isValid']) {
                 $output->writeln(
                     sprintf(
                         '<fg=green>✓</> %s -> <fg=green> %s </>',
-                        $redirection->origin(),
-                        $redirection->destination()
+                        $origin,
+                        $destination
                     )
                 );
                 $success++;
@@ -44,8 +43,8 @@ final class CheckRedirectionFromYamlCommand extends Command
                 $output->writeln(
                     sprintf(
                         '<fg=red>✗</> %s -> %s',
-                        $redirection->origin(),
-                        $redirection->destination()
+                        $origin,
+                        $destination
                     )
                 );
                 $fails++;
@@ -54,7 +53,7 @@ final class CheckRedirectionFromYamlCommand extends Command
             if ($input->getOption('verbose')) {
                 $output->writeln(sprintf('├── %s', $redirection->origin()));
 
-                foreach ($redirectionTrace as $traceItem) {
+                foreach ($redirection['trace'] as $traceItem) {
                     $output->writeln(sprintf('├── %s', $traceItem));
                 }
             }
