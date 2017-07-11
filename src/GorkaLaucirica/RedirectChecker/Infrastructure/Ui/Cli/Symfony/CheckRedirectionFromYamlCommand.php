@@ -20,6 +20,9 @@ class CheckRedirectionFromYamlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $fails = 0;
+        $success = 0;
+
         $client = new Guzzle();
 
         $redirections = (new Yaml())->load($input->getArgument('filepath'));
@@ -31,11 +34,12 @@ class CheckRedirectionFromYamlCommand extends Command
             if ($redirection->checkIsValid($redirectionTrace)) {
                 $output->writeln(
                     sprintf(
-                        '<fg=green>✓</> %s -> %s',
+                        '<fg=green>✓</> %s -> <fg=green> %s </>',
                         $redirection->origin(),
                         $redirection->destination()
                     )
                 );
+                $success++;
             } else {
                 $output->writeln(
                     sprintf(
@@ -44,6 +48,7 @@ class CheckRedirectionFromYamlCommand extends Command
                         $redirection->destination()
                     )
                 );
+                $fails++;
             }
 
             if ($input->getOption('verbose')) {
@@ -54,5 +59,17 @@ class CheckRedirectionFromYamlCommand extends Command
                 }
             }
         }
+
+        $output->writeln('');
+        $output->writeln(
+            sprintf(
+                '%s tests run, <fg=green>%s success</>, <fg=red>%s failed</>',
+                count($redirections),
+                $success,
+                $fails
+            )
+        );
+
+        return $fails > 0 ? -1 : 0;
     }
 }
