@@ -1,0 +1,3 @@
+suites:
+    redirect_checker:
+        spec_path: tests/
