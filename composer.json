@@ -1,4 +1,8 @@
 {
+    "name": "gorkalaucirica/redirection-checker",
+    "description": "Automated URL redirection checker",
+    "type": "library",
+    "license": "MIT",
     "require": {
         "guzzlehttp/guzzle": "^6.3"
     },
@@ -6,5 +10,6 @@
         "psr-4": {
             "GorkaLaucirica\\RedirectChecker\\": "src/GorkaLaucirica/RedirectChecker"
         }
-    }
+    },
+    "bin": ["bin/redirect-checker"]
 }

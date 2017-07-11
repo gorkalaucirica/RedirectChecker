@@ -6,11 +6,22 @@ use GorkaLaucirica\RedirectChecker\Domain\Redirection;
 use GorkaLaucirica\RedirectChecker\Domain\Uri;
 use Symfony\Component\Yaml\Yaml as SymfonyYaml;
 
-class Yaml
+final class Yaml
 {
     public function load(string $filePath): array
     {
-        $redirectionsArray = SymfonyYaml::parse(file_get_contents($filePath));
+        $content = @file_get_contents($filePath);
+
+        if(!$content) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Could not load the contents of the file "%s"',
+                    $filePath
+                )
+            );
+        }
+
+        $redirectionsArray = SymfonyYaml::parse($content);
 
         $redirections = [];
 

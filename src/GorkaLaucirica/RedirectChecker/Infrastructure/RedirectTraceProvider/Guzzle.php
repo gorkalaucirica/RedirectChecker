@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\RedirectMiddleware;
 
-class Guzzle implements RedirectTraceProvider
+final class Guzzle implements RedirectTraceProvider
 {
     private $client;
 
