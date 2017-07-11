@@ -51,7 +51,7 @@ final class CheckRedirectionFromYamlCommand extends Command
             }
 
             if ($input->getOption('verbose')) {
-                $output->writeln(sprintf('├── %s', $redirection->origin()));
+                $output->writeln(sprintf('├── %s', $origin));
 
                 foreach ($redirection['trace'] as $traceItem) {
                     $output->writeln(sprintf('├── %s', $traceItem));
