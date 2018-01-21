@@ -3,7 +3,9 @@
 namespace GorkaLaucirica\RedirectChecker\Application\Query;
 
 use GorkaLaucirica\RedirectChecker\Domain\Redirection;
+use GorkaLaucirica\RedirectChecker\Domain\RedirectionTraceItem;
 use GorkaLaucirica\RedirectChecker\Domain\RedirectTraceProvider;
+use GorkaLaucirica\RedirectChecker\Domain\RequestException;
 use GorkaLaucirica\RedirectChecker\Domain\Uri;
 
 class CheckRedirectionHandler
@@ -26,11 +28,12 @@ class CheckRedirectionHandler
 
         return [
             'isValid' => $redirection->isValid($redirectionTrace),
-            'trace' => array_map(function($uri) {
-                return $uri->__toString();
+            'trace' => array_map(function (RedirectionTraceItem $redirectionTraceItem) {
+                return [
+                    'uri' => $redirectionTraceItem->uri()->__toString(),
+                    'statusCode' => $redirectionTraceItem->statusCode()->statusCode()
+                ];
             }, $redirectionTrace)
         ];
     }
-
-
 }
