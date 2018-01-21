@@ -13,7 +13,7 @@ class Redirection
         $this->destination = $destination;
     }
 
-    public function isValid(array $uriTrace)
+    public function isValid(array $uriTrace) : bool
     {
         if(count($uriTrace) === 0) {
             return false;
@@ -21,11 +21,12 @@ class Redirection
 
         $lastUri = $uriTrace[count($uriTrace) - 1];
 
-        if(!$lastUri instanceof Uri) {
-            throw new \InvalidArgumentException('Each element of uriTrace must be instance of Uri');
+        if(!$lastUri instanceof RedirectionTraceItem) {
+            throw new \InvalidArgumentException('Each element of trace must be instance of RedirectionTraceItem');
         }
 
-        return $lastUri->__toString() === $this->destination->__toString();
+        return $lastUri->uri()->__toString() === $this->destination->__toString()
+            && $lastUri->statusCode()->isSuccessful();
     }
 
     public function origin(): Uri

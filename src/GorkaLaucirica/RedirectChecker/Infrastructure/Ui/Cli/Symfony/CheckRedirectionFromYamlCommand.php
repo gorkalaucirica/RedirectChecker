@@ -30,31 +30,14 @@ final class CheckRedirectionFromYamlCommand extends Command
 
         foreach ($redirections as $origin => $destination) {
             $redirection = $checkRedirectionHandler->__invoke(new CheckRedirectionQuery($origin, $destination));
-            if ($redirection['isValid']) {
-                $output->writeln(
-                    sprintf(
-                        '<fg=green>✓</> %s -> <fg=green> %s </>',
-                        $origin,
-                        $destination
-                    )
-                );
-                $success++;
-            } else {
-                $output->writeln(
-                    sprintf(
-                        '<fg=red>✗</> %s -> %s',
-                        $origin,
-                        $destination
-                    )
-                );
-                $fails++;
-            }
+            $output->writeln($this->renderResultLine($redirection, $origin, $destination));
+            $redirection['isValid'] ? $success++ : $fails++;
 
             if ($input->getOption('verbose')) {
                 $output->writeln(sprintf('├── %s', $origin));
 
                 foreach ($redirection['trace'] as $traceItem) {
-                    $output->writeln(sprintf('├── %s', $traceItem));
+                    $output->writeln($this->renderTraceItemLine($traceItem));
                 }
             }
         }
@@ -70,5 +53,30 @@ final class CheckRedirectionFromYamlCommand extends Command
         );
 
         return $fails > 0 ? -1 : 0;
+    }
+
+    private function renderResultLine(array $redirection, string $origin, string $destination): string
+    {
+        $isValid = $redirection['isValid'];
+
+        $redirectionTraceLength = count($redirection['trace']);
+
+        $statusCode = $redirectionTraceLength === 0
+            ? 404
+            : $redirection['trace'][$redirectionTraceLength - 1]['statusCode'];
+
+        return sprintf(
+            '<fg=%1$s>%2$s</> [%3$d] %4$s -> <fg=%1$s> %5$s </>',
+            $isValid ? 'green' : 'red',
+            $isValid ? '✓' : '✗',
+            $statusCode,
+            $origin,
+            $destination
+        );
+    }
+
+    private function renderTraceItemLine(array $traceItem) : string
+    {
+        return sprintf('├── [%d] %s', $traceItem['statusCode'], $traceItem['uri']);
     }
 }
