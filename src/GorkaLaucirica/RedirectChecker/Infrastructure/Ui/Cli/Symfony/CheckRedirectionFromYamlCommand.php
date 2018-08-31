@@ -31,41 +31,47 @@ final class CheckRedirectionFromYamlCommand extends Command
 
         $redirections = (new Yaml())->load($input->getArgument('filepath'));
 
-        foreach ($redirections as $origin => $destination) {
-            if ($input->hasOption('base-url')) {
-                $baseUrl = rtrim($input->getOption('base-url'), '/');
-                if (strpos($origin, 'http') === false) {
-                    $origin = $baseUrl . $origin;
+        try {
+            foreach ($redirections as $origin => $destination) {
+                if ($input->hasOption('base-url')) {
+                    $baseUrl = rtrim($input->getOption('base-url'), '/');
+                    if (strpos($origin, 'http') === false) {
+                        $origin = $baseUrl . $origin;
+                    }
+                    if (strpos($destination, 'http') === false) {
+                        $destination = $baseUrl . $destination;
+                    }
                 }
-                if (strpos($destination, 'http') === false) {
-                    $destination = $baseUrl . $destination;
+
+                $redirection = $checkRedirectionHandler->__invoke(new CheckRedirectionQuery($origin, $destination));
+                $output->writeln($this->renderResultLine($redirection, $origin, $destination));
+                $redirection['isValid'] ? $success++ : $fails++;
+
+                if ($input->getOption('verbose')) {
+                    $output->writeln(sprintf('├── %s', $origin));
+
+                    foreach ($redirection['trace'] as $traceItem) {
+                        $output->writeln($this->renderTraceItemLine($traceItem));
+                    }
                 }
             }
 
-            $redirection = $checkRedirectionHandler->__invoke(new CheckRedirectionQuery($origin, $destination));
-            $output->writeln($this->renderResultLine($redirection, $origin, $destination));
-            $redirection['isValid'] ? $success++ : $fails++;
+            $output->writeln('');
+            $output->writeln(
+                sprintf(
+                    '%s tests run, <fg=green>%s success</>, <fg=red>%s failed</>',
+                    count($redirections),
+                    $success,
+                    $fails
+                )
+            );
 
-            if ($input->getOption('verbose')) {
-                $output->writeln(sprintf('├── %s', $origin));
-
-                foreach ($redirection['trace'] as $traceItem) {
-                    $output->writeln($this->renderTraceItemLine($traceItem));
-                }
-            }
+            return $fails > 0 ? -1 : 0;
+        } catch (\Exception $e) {
+            $output->writeln(
+                '<error>' . $e->getMessage() . '</error>'
+            );
         }
-
-        $output->writeln('');
-        $output->writeln(
-            sprintf(
-                '%s tests run, <fg=green>%s success</>, <fg=red>%s failed</>',
-                count($redirections),
-                $success,
-                $fails
-            )
-        );
-
-        return $fails > 0 ? -1 : 0;
     }
 
     private function renderResultLine(array $redirection, string $origin, string $destination): string
