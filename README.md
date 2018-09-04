@@ -33,7 +33,8 @@ http://support.google.com: https://support.google.com/
 3. Run the command
 
 ```bash
-$ vendor/bin/redirect-checker yaml tests/redirections/example.yml
+$ ./bin/redirect-checker yaml tests/redirections/example.yml
+$ ./bin/redirect-checker yaml tests/redirections/example-non-absolute.yml --base-url="https://www.google.com" 
 ```
 
 ## Licensing Options
