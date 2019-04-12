@@ -62,6 +62,9 @@ final class Guzzle implements RedirectTraceProvider
 
     private function replaceLastItemsStatusCode(array $redirectionTrace, int $statusCode) : array
     {
+        if (count($redirectionTrace)==0) {
+			return array();
+		}
         $redirectionTrace[count($redirectionTrace) -1] = new RedirectionTraceItem(
             $redirectionTrace[count($redirectionTrace) -1]->uri(),
             new StatusCode($statusCode)
